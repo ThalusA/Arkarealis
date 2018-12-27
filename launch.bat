@@ -4,12 +4,12 @@ color 07
 dir /s /b main.exe>tmpFile
 set /p MainPath=<tmpFile
 del tmpFile
-IF /I "%MainPath%" NEQ "" CALL "%MainPath%" && GOTO EXIT
+IF /I "%MainPath%" NEQ "" ( CALL "%MainPath%" && GOTO EXIT )
 choice /M "Project not build, do you want to build it then launch it ? "
-IF ERRORLEVEL==1 GOTO BUILDING
-IF ERRORLEVEL==2 GOTO EXIT 
+IF %ERRORLEVEL% EQU 1 GOTO BUILDING
+IF %ERRORLEVEL% EQU 2 GOTO EXIT 
 :BUILDING
-setup.bat
+CALL setup.bat
 GOTO START
 :EXIT
 pause

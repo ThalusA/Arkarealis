@@ -67,7 +67,8 @@ def select_screen():
 
 
 def quit_screen():
-    pygame.event.post(pygame.event.Event(pygame.QUIT))
+    pygame.quit()
+    sys.exit()
 
 
 main_screen()
