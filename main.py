@@ -1,12 +1,10 @@
 import sys
-import time
-import tkinter as tk
-
+import tkinter
 import pygame
 
 pygame.font.init()
 pygame.init()
-root = tk.Tk()
+root = tkinter.Tk()
 
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
@@ -37,23 +35,40 @@ def render_text(string, tuple_var, font="freesansbold", size=48, text_color=(0, 
     fake_screen.blit(rendered_text, (transform_x(tuple_var[0]) - (rendered_text.get_width()//2), transform_y(tuple_var[1])-(rendered_text.get_height()//2)))
 
 def make_button(x, y, width, height, command, string="", font="freesansbold", size=48, text_color=(0,0,0), button_color=(255,0,0), large=0, underline=0, bold=0, italic=0):
-    x2, y2, width2, height2 = multi_transform(x, y, width, height)
-    pygame.draw.rect(fake_screen, button_color, (x2, y2, width2, height2), large)
+    pygame.draw.rect(fake_screen, button_color, multi_transform(x, y, width, height), large)
     render_text(string, ((x+(width//2)),(y+(height//2))), font, size, text_color, underline, bold, italic)
-    button_array.append([[x2, y2, x2 + width2, y2 + height2], command])
+    button_array.append([[x, y, x + width, y + height], command])
 
 def clear_screen():
     screen.fill((255,255,255))
     fake_screen.fill((255,255,255))
  
+def update():
+    screen.blit(fake_screen, (0,0))
+    pygame.display.flip()
+
 def main_screen():
     clear_screen()
-    make_button(45,45,10,10, "option_screen()", "Réglages")
-    pygame.display.flip()
+    make_button(45, 45, 10, 10, "option_screen()", "Réglages")
+    make_button(45, 30, 10, 10, "select_screen()", "Jouer")
+    make_button(45, 60, 10, 10, "quit_screen()", "Quitter")
+    update()
 
 def option_screen():
     clear_screen()
-    pygame.display.flip()
+    update()
+
+def select_screen():
+    clear_screen()
+    render_text("Selectionner votre personnage", (50,15))
+    for i in range (4):
+        pygame.draw.rect(fake_screen, (255,0,0), multi_transform((i*20)+11.5, 25, 17, 50), 5)
+    update()
+
+
+def quit_screen():
+    pygame.event.post(pygame.event.Event(pygame.QUIT))
+
 
 main_screen()
 
@@ -69,6 +84,7 @@ while 1:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 for value in button_array:
+                    value[0][0], value[0][1], value[0][2], value[0][3] = multi_transform(value[0][0], value[0][1], value[0][2], value[0][3])
                     if (value[0][0] < event.pos[0] and event.pos[0] < value[0][2] and value[0][1] < event.pos[1] and event.pos[1] < value[0][3]):
                         exec(value[1])
                         button_array.clear()
